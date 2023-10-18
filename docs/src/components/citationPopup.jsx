@@ -129,6 +129,9 @@ const CitationPopup = () => {
         <option value="mla">MLA</option>
         <option value="ieee">IEEE</option>
       </select>
+      <p className={classes.searchContainer}>
+        Type "@" for citation popup and Esc to close it
+      </p>
       <ReactQuill
         className={classes.editor}
         value={editorContent}
