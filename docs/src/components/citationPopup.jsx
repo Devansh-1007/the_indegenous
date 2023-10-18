@@ -7,7 +7,7 @@ import ResearchPopup from "./researchPopup";
 import { makeStyles } from "@material-ui/core/styles";
 
 const Cite = require("citation-js");
-
+// separate styled components
 const useStyles = makeStyles((theme) => ({
   searchContainer: {
     display: "flex",
@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "1%",
   },
 }));
+
 const CitationPopup = () => {
   const classes = useStyles();
 
@@ -50,7 +51,11 @@ const CitationPopup = () => {
   const [atSymbolEntered, setAtSymbolEntered] = useState(false);
   const [citationTemplate, setCitationTemplate] = useState("harvard");
 
+  // now this is to handle a way to exit the popup without closing
   useEffect(() => {
+    // now the logic behind below conditions
+    // if @ is pressed , show popup but if ESC is pressed reset the search bar and close the popup and do not triger
+    // the popup until and unless a new @ is pressed
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         setShowPopup(false);
@@ -80,10 +85,15 @@ const CitationPopup = () => {
   }, [showPopup]);
 
   const handleEditorChange = (content) => {
+    // para tags were showing up in the console using this ... jsonify could have been a option but googled it and it offered
+    // me the below solution
     const cleanedContent = content.replace(/<p>|<\/p>/g, "").trim();
+    // this is to exclude anyhthing before @
     const atIndex = cleanedContent.lastIndexOf("@");
 
     if (atIndex !== -1 && atSymbolEntered) {
+      // okay so when i clicked bold italic and other things
+      // it included html tags to remove this i used below
       const searchText = cleanedContent
         .substring(atIndex + 1)
         .replace(/<[^>]*>/g, "")
@@ -97,6 +107,7 @@ const CitationPopup = () => {
   };
 
   const handleResultClick = (result) => {
+    // this is to replace the @text with the actual citations
     const citation = new Cite(result.citationStyles.bibtex);
     const citationText = citation.format("bibliography", {
       format: "html",
@@ -111,7 +122,6 @@ const CitationPopup = () => {
     setAtSymbolEntered(false);
     setSearchKeyword("");
   };
-  console.log(citationTemplate);
   const handlePopupClose = () => {
     setShowPopup(false);
     setAtSymbolEntered(false);
@@ -120,6 +130,7 @@ const CitationPopup = () => {
 
   return (
     <div>
+      {/* below is the page structure */}
       <select
         value={citationTemplate}
         onChange={(e) => setCitationTemplate(e.target.value)}

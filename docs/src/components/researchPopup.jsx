@@ -3,8 +3,11 @@ import { Typography, Card, CardContent, Link } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { handleSearch } from "../api";
 
+// this is to separately handle the citation bot
+
 const Cite = require("citation-js");
 
+// styled components
 const useStyles = makeStyles((theme) => ({
   card: {
     margin: "10px",
@@ -16,10 +19,11 @@ const useStyles = makeStyles((theme) => ({
   resultCard: {
     margin: "auto",
     width: "25%",
-    marginBottom: theme.spacing(2),
+    padding: theme.spacing(1), // Adjust the padding to reduce the height
+    marginBottom: theme.spacing(1), // Adjust the marginBottom to reduce the height
     borderRadius: theme.shape.borderRadius,
     boxShadow: theme.shadows[2],
-    fontSize: "5px", 
+    fontSize: "2px",
   },
   abstract: {
     overflow: "hidden",
@@ -27,6 +31,13 @@ const useStyles = makeStyles((theme) => ({
     WebkitBoxOrient: "vertical",
     textOverflow: "ellipsis",
     WebkitLineClamp: 2,
+  },
+  citation: {
+    overflow: "hidden",
+    display: "-webkit-box",
+    WebkitBoxOrient: "vertical",
+    textOverflow: "ellipsis",
+    WebkitLineClamp: 1,
   },
   authors: {
     overflow: "hidden",
@@ -42,10 +53,13 @@ const ResearchPopup = ({ searchKeyword, onResultClick, citationTemplate }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [showNoResult, setShowNoResult] = useState(false);
 
+  // this is to handle simultaneous changes made into the keyword as well as the editor so that user dont have to click or enter everytime he/she types in something
   useEffect(() => {
     const searchFunction = async () => {
+      //used api.js wala function
       const fetchData = await handleSearch(searchKeyword);
       try {
+        // error handling for not found cases
         if (fetchData === undefined) {
           setShowNoResult(true);
         } else {
@@ -57,6 +71,7 @@ const ResearchPopup = ({ searchKeyword, onResultClick, citationTemplate }) => {
         setShowNoResult(true);
       }
     };
+    // as soon as it detects that it is not empty it triggers a search
     if (searchKeyword !== "") {
       searchFunction();
     } else {
@@ -70,6 +85,7 @@ const ResearchPopup = ({ searchKeyword, onResultClick, citationTemplate }) => {
         <div style={{ textAlign: "center", marginTop: "50px" }}>
           <Typography variant="h5">No Result Found</Typography>
         </div>
+        // same implementation as that of researchTab page
       ) : (
         searchResults.map((result) => (
           <Card
@@ -78,7 +94,7 @@ const ResearchPopup = ({ searchKeyword, onResultClick, citationTemplate }) => {
             onClick={() => onResultClick(result)}
           >
             <CardContent>
-              <Typography variant="h6">
+              <Typography variant="h6" className={classes.title}>
                 <Link
                   href={result.url}
                   target="_blank"
@@ -111,7 +127,7 @@ const ResearchPopup = ({ searchKeyword, onResultClick, citationTemplate }) => {
                     </Link>
                   </Typography>
                 )}
-              <Typography variant="body1">
+              <Typography variant="body1" className={classes.citation}>
                 <strong>Citation:</strong>{" "}
                 <span
                   dangerouslySetInnerHTML={{
